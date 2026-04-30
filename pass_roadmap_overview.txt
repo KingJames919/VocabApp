@@ -1,0 +1,27 @@
+James Vocabulary App V1 - Pass Roadmap Overview
+
+Current status:
+- PASS 1 locked
+- PASS 2 locked
+- PASS 3 locked
+- PASS 4 locked
+- PASS 4.5 locked as progress direction
+- PASS 5 locked
+- PASS 6 active
+- PASS 7 future
+- PASS 8 future
+
+Immediate next step after PASS 6 approval:
+Complete scoped documentation cleanup and confirm the active source-of-truth set. Do not begin PASS 7 until documentation/source-of-truth cleanup is approved.
+
+Future scope:
+- PASS 7 is future and should not begin until PASS 6 is approved.
+- PASS 8 is future and should not begin until its scope is explicitly approved.
+
+Parked issues:
+- Main text expansion
+- Functional visual asset work
+- content.js metadata semantics
+- Session 5 distractor polish
+- Homepage V2 adoption/rejection decision
+- Future spaced-review metadata behavior
