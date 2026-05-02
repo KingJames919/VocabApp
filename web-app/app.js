@@ -470,8 +470,13 @@ sanitizeSession3Progress(run.sessionProgress[3]);
 sanitizeSession5Progress(run.sessionProgress[5]);
 
 const app = document.querySelector("#app");
+const brandHeading = document.querySelector(".masthead h1");
 const resetButton = document.querySelector("#reset-progress");
 const unlockAllButton = document.querySelector("#unlock-all");
+
+brandHeading.addEventListener("click", () => {
+  location.hash = "#/";
+});
 
 resetButton.addEventListener("click", () => {
   run = defaultRun();
@@ -625,13 +630,13 @@ function renderHome() {
       <header class="home-v1-header">
         <div>
           <p class="eyebrow">Vocabulary Learning Prototype</p>
-          <h2 id="home-title">James App</h2>
+          <h2 id="home-title"><a href="#/" class="brand-link">James App</a></h2>
           <p>A learning path for building understanding through words.</p>
         </div>
         <nav class="home-v1-nav" aria-label="Prototype sections">
-          <span class="home-v1-nav-item home-v1-nav-active">Today</span>
-          <span class="home-v1-nav-item home-v1-nav-disabled">Play</span>
-          <span class="home-v1-nav-item home-v1-nav-disabled">Archive</span>
+          <a href="#/" class="home-v1-nav-item home-v1-nav-active">Today</a>
+          <a href="#/sequence" class="home-v1-nav-item">Play</a>
+          <a href="#/archive" class="home-v1-nav-item">Archive</a>
         </nav>
       </header>
 
@@ -883,9 +888,7 @@ function renderSequence() {
       <p class="helper-text">A missed answer does not block the path. It shows which word or idea needs another look.</p>
     </section>
 
-    <section class="grid two-up overview-grid session-1-workspace ${
-      session1UsesFocusedWorkspace(currentStep) ? "session-1-focused-workspace" : ""
-    }">
+    <section class="grid two-up overview-grid session-1-workspace">
       <article class="card stat-card">
         <p class="eyebrow">Where you are</p>
         <h3>${overview.heading}</h3>
@@ -1035,27 +1038,26 @@ function renderSession1() {
         <h3>What you’re building</h3>
         ${renderProgressChecklist([
           {
-            label: `Before-reading note: ${progress.priorKnowledge ? "Saved" : "Not yet"}`,
+            label: "Before-reading note",
             complete: Boolean(progress.priorKnowledge?.trim()),
           },
           {
-            label: `Passage checks answered: ${score.answeredCount}/3`,
+            label: "Passage checks answered",
             complete: score.answeredCount === session1Questions.length,
           },
           {
-            label: `Anchor words highlighted in the second pass: ${progress.exposuresLogged ? "Seen" : "Not yet"}`,
+            label: "Anchor words highlighted in the second pass",
             complete: Boolean(progress.exposuresLogged),
           },
           {
-            label: `Family clue shown: ${progress.familyExposureLogged ? "Seen" : "Not yet"}`,
+            label: "Family clue shown",
             complete: Boolean(progress.familyExposureLogged),
           },
           {
-            label: `Passage checks matched: ${score.correctCount}/3`,
+            label: "Passage checks matched",
             complete: score.correctCount === session1Questions.length,
           },
         ])}
-        <p class="helper-text">Your work is saved. This first look gives the next session something to build on.</p>
       </article>
     </section>
 
@@ -1106,7 +1108,6 @@ function renderSession2() {
   const progress = run.sessionProgress[2];
   const currentStep = progress.step ?? "preview";
   const roundsCompleted = session2Rounds.filter((round) => progress.rounds[round.id]?.completed).length;
-  const transferStatus = progress.transfer.status ?? "not_started";
   const canFinish = roundsCompleted === session2Rounds.length && progress.transfer.completed;
 
   return `
@@ -1136,15 +1137,32 @@ function renderSession2() {
       <article class="card sidebar-surface">
         <p class="eyebrow">Your Progress</p>
         <h3>Word family work</h3>
-        <ul class="plain-list">
-          <li>Family clue: port = carry</li>
-          <li>Family words checked: ${roundsCompleted}/3</li>
-          <li>transport: ${progress.rounds.s2_round_1?.completed ? "Checked" : "Not yet"}</li>
-          <li>import: ${progress.rounds.s2_round_2?.completed ? "Checked" : "Not yet"}</li>
-          <li>export: ${progress.rounds.s2_round_3?.completed ? "Checked" : "Not yet"}</li>
-          <li>New-word check: ${session2TransferSidebarLabel(transferStatus)}</li>
-        </ul>
-        <p class="helper-text">This step checks how port = carry works across related words.</p>
+        ${renderProgressChecklist([
+          {
+            label: "Family clue shown",
+            complete: true,
+          },
+          {
+            label: "Family words checked",
+            complete: roundsCompleted === session2Rounds.length,
+          },
+          {
+            label: "transport",
+            complete: Boolean(progress.rounds.s2_round_1?.completed),
+          },
+          {
+            label: "import",
+            complete: Boolean(progress.rounds.s2_round_2?.completed),
+          },
+          {
+            label: "export",
+            complete: Boolean(progress.rounds.s2_round_3?.completed),
+          },
+          {
+            label: "New-word check",
+            complete: Boolean(progress.transfer.completed),
+          },
+        ])}
       </article>
     </section>
 
@@ -1267,13 +1285,24 @@ function renderSession3() {
       <article class="card sidebar-surface">
         <p class="eyebrow">Your Progress</p>
         <h3>Word precision</h3>
-        <ul class="plain-list">
-          <li>Short prompts finished: ${completedPrompts}/${session3Prompts.length}</li>
-          <li>Short sentence: ${progress.prompt5Evaluator ? "Saved" : "Not yet"}</li>
-          <li>Predict in sentence: ${sentenceWordStatus(progress.prompt5Evaluator?.target_words?.predict)}</li>
-          <li>Pressure in sentence: ${sentenceWordStatus(progress.prompt5Evaluator?.target_words?.pressure)}</li>
-        </ul>
-        <p class="helper-text">Choose the word that fits the meaning. Then use one in a short weather sentence.</p>
+        ${renderProgressChecklist([
+          {
+            label: "Short prompts finished",
+            complete: completedPrompts === session3Prompts.length,
+          },
+          {
+            label: "Short sentence",
+            complete: Boolean(progress.prompt5Evaluator),
+          },
+          {
+            label: "Predict in sentence",
+            complete: progress.prompt5Evaluator?.target_words?.predict === "correct",
+          },
+          {
+            label: "Pressure in sentence",
+            complete: progress.prompt5Evaluator?.target_words?.pressure === "correct",
+          },
+        ])}
       </article>
     </section>
 
@@ -1323,15 +1352,34 @@ function renderSession4() {
       <article class="card sidebar-surface">
         <p class="eyebrow">Your Progress</p>
         <h3>Explanation work</h3>
-        <ul class="plain-list">
-          <li>Draft 1: ${progress.draft1Evaluation ? "Submitted" : "Not yet"}</li>
-          <li>Revision: ${session4RevisionStatus(progress)}</li>
-          <li>Kept draft: ${progress.keptDraft ? (progress.keptDraft.source === "draft_2" ? "Revision kept" : "First draft kept") : "Not ready yet"}</li>
-          <li>Required words: ${session4RequiredWordsStatus(currentEvaluation)}</li>
-          <li>Transport (optional): ${session4TransportStatus(currentEvaluation, { sidebar: true })}</li>
-          <li>Strongest sentence: ${progress.bestSentence ? "Saved" : "Not yet"}</li>
-        </ul>
-        <p class="helper-text">The stronger explanation carries into review.</p>
+        ${renderProgressChecklist([
+          {
+            label: "Draft 1",
+            complete: Boolean(progress.draft1Evaluation),
+          },
+          {
+            label: "Revision decision",
+            complete: Boolean(progress.revisionChoice || progress.draft2Evaluation),
+          },
+          {
+            label: "Kept draft",
+            complete: Boolean(progress.keptDraft),
+          },
+          {
+            label: "Required words",
+            complete:
+              currentEvaluation?.required_words?.predict === "correct" &&
+              currentEvaluation?.required_words?.pressure === "correct",
+          },
+          {
+            label: "Transport",
+            complete: currentEvaluation?.family_use_quality === "accurate",
+          },
+          {
+            label: "Strongest sentence",
+            complete: Boolean(progress.bestSentence),
+          },
+        ])}
       </article>
     </section>
 
@@ -1356,7 +1404,6 @@ function renderSession5() {
   const submitted = currentCard ? Boolean(progress.results[currentCard.instanceId]) : false;
   const deckCount = progress.deck.length;
   const completedCount = progress.deck.filter((card) => progress.results[card.instanceId]).length;
-  const transferSummary = learnerTransferSummary(progress.transferStatus ?? "none");
 
   return `
     <section class="page-header editorial-header session-accent-bar-5">
@@ -1381,13 +1428,24 @@ function renderSession5() {
       <article class="card sidebar-surface">
         <p class="eyebrow">Your Progress</p>
         <h3>Review evidence</h3>
-        <ul class="plain-list">
-          <li>Review steps: ${completedCount}/${deckCount}</li>
-          <li>Related-word check: ${transferSummary}</li>
-          <li>Second looks: ${progress.retestsUsed}/2</li>
-          <li>Final sentence: ${progress.results.s5_card_7 ? "Submitted" : "Not yet"}</li>
-        </ul>
-        <p class="helper-text">Second looks help review a word once more.</p>
+        ${renderProgressChecklist([
+          {
+            label: "Review steps",
+            complete: deckCount > 0 && completedCount === deckCount,
+          },
+          {
+            label: "Related-word check",
+            complete: Boolean(progress.transferStatus),
+          },
+          {
+            label: "Second looks",
+            complete: progress.retestsUsed > 0,
+          },
+          {
+            label: "Final sentence",
+            complete: Boolean(progress.results.s5_card_7),
+          },
+        ])}
       </article>
     </section>
 

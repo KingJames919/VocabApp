@@ -216,6 +216,19 @@ button {
   line-height: 0.95;
 }
 
+.brand-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-link:hover {
+  color: inherit;
+}
+
+.masthead h1 {
+  cursor: pointer;
+}
+
 .masthead-note,
 .deck,
 .session-subtitle,
@@ -1127,10 +1140,11 @@ body:has(.home-v1-page) .app-shell {
   background: rgba(255, 255, 255, 0.46);
   color: var(--color-black);
   font-weight: 800;
+  text-decoration: none;
 }
 
-.home-v1-nav-disabled {
-  color: color-mix(in srgb, var(--color-black) 62%, white 38%);
+.home-v1-nav-item:hover {
+  background: rgba(255, 255, 255, 0.64);
 }
 
 .home-v1-hero {

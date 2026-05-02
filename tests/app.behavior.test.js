@@ -80,6 +80,7 @@ globalThis.__appTest = {
   ensureSession5Deck,
   submitSession5CurrentCard,
   maybeInsertSession5Retest,
+  renderSequence,
   buildRecapData,
   buildArchiveData,
   computeAnchorStatus,
@@ -379,4 +380,16 @@ test("archive shows the collection that has opened so far", () => {
     JSON.stringify(archive.relatedWords.map((word) => word.label)),
     JSON.stringify(["portable"]),
   );
+});
+
+test("sequence page renders without session-only state", () => {
+  const app = loadAppHarness();
+  const run = app.defaultRun();
+  app.setRun(run);
+
+  const html = app.renderSequence();
+
+  assert.match(html, /How Meteorologists Predict Severe Weather/);
+  assert.match(html, /Read & Notice/);
+  assert.match(html, /Begin this step/);
 });
