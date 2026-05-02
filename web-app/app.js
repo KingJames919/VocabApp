@@ -563,6 +563,12 @@ function render() {
     return;
   }
 
+  if (route === "/archive") {
+    app.innerHTML = renderArchive();
+    bindArchive();
+    return;
+  }
+
   if (route.startsWith("/session/")) {
     const number = Number(route.split("/").pop());
     app.innerHTML = renderSession(number);
@@ -3625,6 +3631,149 @@ function buildReviewNext(anchorStatuses, familyStatus, knowledgeTargetStatuses =
   }
 
   return "Keep the words active by using them in one short weather explanation.";
+}
+
+function buildArchiveData() {
+  const hasStarted = Boolean(run.startedAt);
+  const canShowAnchorWords = hasStarted;
+  const canShowFamily = hasStarted && run.unlockedSession >= 2;
+  const anchorStatuses = contentPack.anchorWords.map((word) => computeAnchorStatus(word.id, word.label));
+  const anchorStatusById = new Map(anchorStatuses.map((item) => [item.id, item]));
+
+  const anchorWords = canShowAnchorWords
+    ? contentPack.anchorWords.map((word) => {
+        const status = anchorStatusById.get(word.id);
+        return {
+          id: word.id,
+          label: word.label,
+          clue: word.clue,
+          partOfSpeech: word.partOfSpeech,
+          status: status?.status ?? "fragile",
+          evidenceCount: status?.successes ?? 0,
+        };
+      })
+    : [];
+
+  const familyWords = canShowFamily
+    ? contentPack.morphologyFamily.taughtWords.map((word) => ({
+        id: word,
+        label: word,
+        clue:
+          word === contentPack.morphologyFamily.anchorConnection
+            ? "carry from one place to another"
+            : `uses ${contentPack.morphologyFamily.label} = ${contentPack.morphologyFamily.meaning}`,
+      }))
+    : [];
+
+  const relatedWords = canShowFamily
+    ? [
+        {
+          id: contentPack.morphologyFamily.untaughtRelative,
+          label: contentPack.morphologyFamily.untaughtRelative,
+          clue: `new related word using ${contentPack.morphologyFamily.label} = ${contentPack.morphologyFamily.meaning}`,
+        },
+      ]
+    : [];
+
+  return {
+    hasStarted,
+    canShowFamily,
+    anchorWords,
+    familyWords,
+    relatedWords,
+    family: contentPack.morphologyFamily,
+  };
+}
+
+function renderArchive() {
+  const archive = buildArchiveData();
+
+  return `
+    <section class="page-header editorial-header">
+      <p class="eyebrow">Archive</p>
+      <h2>Words learned so far</h2>
+      <p>This is your collection from the current word path.</p>
+      <p class="deck">As you move through the sessions, this page keeps the words and family clues close by.</p>
+    </section>
+
+    ${
+      archive.hasStarted
+        ? `
+          <section class="grid two-up">
+            <article class="card">
+              <p class="eyebrow">Anchor Words</p>
+              <h3>Words from the weather text</h3>
+              <ul class="plain-list">
+                ${archive.anchorWords
+                  .map(
+                    (word) => `
+                      <li>
+                        <strong>${word.label}</strong> (${word.partOfSpeech}) - ${word.clue}
+                        <span class="status-pill">${recapStatusLabel(word.status)}</span>
+                      </li>
+                    `,
+                  )
+                  .join("")}
+              </ul>
+            </article>
+
+            <article class="card">
+              <p class="eyebrow">Family Clue</p>
+              <h3>${archive.family.label} = ${archive.family.meaning}</h3>
+              ${
+                archive.canShowFamily
+                  ? `
+                    <p>This family clue connects words that carry the same meaning part.</p>
+                    <ul class="plain-list">
+                      ${archive.familyWords
+                        .map((word) => `<li><strong>${word.label}</strong> - ${word.clue}</li>`)
+                        .join("")}
+                    </ul>
+                  `
+                  : "<p>This family will open after the word-family session begins.</p>"
+              }
+            </article>
+          </section>
+
+          <section class="grid two-up">
+            <article class="card">
+              <p class="eyebrow">Related Words</p>
+              <h3>New words this clue can unlock</h3>
+              ${
+                archive.relatedWords.length
+                  ? `<ul class="plain-list">
+                      ${archive.relatedWords
+                        .map((word) => `<li><strong>${word.label}</strong> - ${word.clue}</li>`)
+                        .join("")}
+                    </ul>`
+                  : "<p>Related words will appear after the family work opens.</p>"
+              }
+            </article>
+
+            <article class="card">
+              <p class="eyebrow">Current Topic</p>
+              <h3>${contentPack.topicTitle}</h3>
+              <p>${contentPack.missionQuestion}</p>
+              <a href="#/sequence" class="secondary-link">Back to the path</a>
+            </article>
+          </section>
+        `
+        : `
+          <section class="card">
+            <h3>No words saved yet</h3>
+            <p>Start the path to add words and family clues to this archive.</p>
+            <button id="start-run" class="primary-button" type="button">Start the path</button>
+          </section>
+        `
+    }
+  `;
+}
+
+function bindArchive() {
+  const button = document.querySelector("#start-run");
+  if (!button) return;
+
+  button.addEventListener("click", startRun);
 }
 
 function evaluateSession4Draft(text, config = session4Config) {

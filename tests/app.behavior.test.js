@@ -81,6 +81,7 @@ globalThis.__appTest = {
   submitSession5CurrentCard,
   maybeInsertSession5Retest,
   buildRecapData,
+  buildArchiveData,
   computeAnchorStatus,
   computeFamilyStatus,
   latestWordOutcome,
@@ -346,5 +347,36 @@ test("recap includes knowledge targets and learned-weather summary", () => {
   assert.equal(
     recap.knowledgeTargetStatuses.find((item) => item.targetId === "wx_pressure_signal").status,
     "solid",
+  );
+});
+
+test("archive shows the collection that has opened so far", () => {
+  const app = loadAppHarness();
+  const run = app.defaultRun();
+  app.setRun(run);
+
+  let archive = app.buildArchiveData();
+  assert.equal(archive.hasStarted, false);
+  assert.equal(archive.anchorWords.length, 0);
+  assert.equal(archive.familyWords.length, 0);
+
+  app.startRun();
+  archive = app.buildArchiveData();
+  assert.equal(archive.hasStarted, true);
+  assert.equal(
+    JSON.stringify(archive.anchorWords.map((word) => word.label)),
+    JSON.stringify(["predict", "pressure", "transport", "severe"]),
+  );
+  assert.equal(archive.familyWords.length, 0);
+
+  app.completeSession(1);
+  archive = app.buildArchiveData();
+  assert.equal(
+    JSON.stringify(archive.familyWords.map((word) => word.label)),
+    JSON.stringify(["transport", "import", "export"]),
+  );
+  assert.equal(
+    JSON.stringify(archive.relatedWords.map((word) => word.label)),
+    JSON.stringify(["portable"]),
   );
 });
