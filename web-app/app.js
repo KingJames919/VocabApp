@@ -1557,20 +1557,27 @@ function renderSession1Body(step, progress, score) {
         <aside class="support-panel">
           <p class="eyebrow">Word Support</p>
           <h4>Words that carry the weather idea</h4>
-          <p class="helper-text">Use these clues when a sentence feels hard. Keep reading for the idea.</p>
-          <ul class="plain-list">
+          <p class="helper-text">When a highlighted word slows you down, check the clue, then return to the sentence.</p>
+          <div class="word-support-list" aria-label="Word support clues">
             ${contentPack.anchorWords
-              .map((word) => `<li><strong>${word.label}</strong>: ${word.clue}</li>`)
+              .map(
+                (word) => `
+                  <div class="word-support-row word-support-${word.id}">
+                    <strong>${word.label}</strong>
+                    <span>${word.clue}</span>
+                  </div>
+                `,
+              )
               .join("")}
-          </ul>
-          <div class="family-card">
+          </div>
+          <div class="family-card family-card-feature">
             <p class="eyebrow">Family clue</p>
-            <p>port means carry.</p>
-            <p>The word transport uses this clue.</p>
+            <h4>port = carry</h4>
+            <p>Transport uses this clue. Moving air can <strong>transport</strong> heat and moisture into a storm system.</p>
           </div>
           <div class="family-card">
             <p class="eyebrow">Word parts to notice</p>
-            <p class="helper-text">You do not need to memorize these yet. Just notice that word parts can carry meaning.</p>
+            <p class="helper-text">No need to memorize these yet. Just notice that word parts can carry meaning.</p>
             <ul class="plain-list">
               <li>dict in predict</li>
               <li>press in pressure</li>
@@ -2020,19 +2027,19 @@ function renderReadingBlock(withSupports) {
       <h4>${withSupports ? "Read again with word support" : "Weather passage"}</h4>
       <p class="helper-text">${
         withSupports
-          ? "This time, slow down near the highlighted words. They help explain how forecasters understand severe weather."
+          ? "Slow down near each highlight. Check the clue, reread the sentence, and keep the weather idea moving."
           : "Read once all the way through. Try to understand what meteorologists study before a storm."
       }</p>
       <p class="reading-text">
         ${withSupports ? highlightWords(contentPack.mainText) : escapeHtml(contentPack.mainText)}
       </p>
-      <h4>Weather clues</h4>
+      <h4>What to notice</h4>
       <ul class="plain-list">
         ${contentPack.visualNotes.map((note) => `<li>${note}</li>`).join("")}
       </ul>
       ${
         withSupports
-          ? `<p class="helper-text">Use the highlights and notes when they help the passage make sense.</p>`
+          ? ""
           : `<p class="helper-text">No word clues yet. First, follow the weather idea.</p>`
       }
     </div>

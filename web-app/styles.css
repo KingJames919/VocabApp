@@ -863,6 +863,48 @@ button {
   font-size: var(--text-section-size);
 }
 
+.word-support-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.word-support-row {
+  display: grid;
+  grid-template-columns: minmax(8ch, 0.35fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+  padding: var(--space-4) 0;
+  border-top: var(--rule-width) solid var(--rule-color-quiet);
+}
+
+.word-support-row strong {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0 0.16em;
+  background: rgba(228, 248, 101, 0.7);
+  color: var(--color-black);
+}
+
+.word-support-row span {
+  color: var(--color-gray-dark);
+}
+
+.family-card-feature {
+  margin-top: var(--space-8);
+}
+
+.family-card-feature h4 {
+  display: inline-flex;
+  margin-bottom: var(--space-5);
+  padding: var(--space-2) var(--space-5);
+  border: var(--rule-width) solid var(--rule-color-strong);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--accent-1) 62%, white 38%);
+  font-size: 1.28rem;
+  letter-spacing: 0;
+}
+
 .reading-text {
   font-size: var(--text-reading-size);
   line-height: 1.88;
