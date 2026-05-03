@@ -891,17 +891,39 @@ button {
 }
 
 .family-card-feature {
-  margin-top: var(--space-8);
+  margin-top: var(--space-6);
 }
 
-.family-card-feature h4 {
+.word-sum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-4);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.word-sum span,
+.word-sum strong,
+.family-meaning strong {
   display: inline-flex;
-  margin-bottom: var(--space-5);
-  padding: var(--space-2) var(--space-5);
-  border: var(--rule-width) solid var(--rule-color-strong);
-  border-radius: var(--radius-control);
-  background: color-mix(in srgb, var(--accent-1) 62%, white 38%);
-  font-size: 1.28rem;
+  padding: 0 0.16em;
+  background: rgba(228, 248, 101, 0.7);
+  color: var(--color-black);
+}
+
+.word-sum span:nth-child(2),
+.word-sum span:nth-child(4) {
+  background: transparent;
+  color: var(--color-gray-dark);
+  padding: 0;
+}
+
+.family-meaning {
+  margin: 0 0 var(--space-5);
+  color: var(--color-black);
+  font-weight: 800;
   letter-spacing: 0;
 }
 

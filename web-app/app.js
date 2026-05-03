@@ -1572,8 +1572,15 @@ function renderSession1Body(step, progress, score) {
           </div>
           <div class="family-card family-card-feature">
             <p class="eyebrow">Family clue</p>
-            <h4>port = carry</h4>
-            <p>Transport uses this clue. Moving air can <strong>transport</strong> heat and moisture into a storm system.</p>
+            <div class="word-sum" aria-label="Word sum for transport">
+              <span>trans</span>
+              <span>+</span>
+              <span>port</span>
+              <span aria-hidden="true">→</span>
+              <strong>transport</strong>
+            </div>
+            <p class="family-meaning"><strong>port</strong> = carry</p>
+            <p>Moving air can <strong>transport</strong> heat and moisture into a storm system.</p>
           </div>
           <div class="family-card">
             <p class="eyebrow">Word parts to notice</p>
