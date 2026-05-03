@@ -721,6 +721,16 @@ button {
   text-align: center;
 }
 
+button.step-pill {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.step-pill:hover {
+  border-color: color-mix(in srgb, var(--accent-local, var(--color-black)) 52%, rgba(0, 0, 0, 0.08));
+  background: color-mix(in srgb, var(--accent-local, var(--color-black)) 30%, white 70%);
+}
+
 .step-current {
   background: color-mix(in srgb, var(--accent-local) 52%, white 48%);
   color: var(--color-black);

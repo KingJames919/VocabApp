@@ -1470,7 +1470,13 @@ function session5AdvanceButtonLabel(currentCard, submitted) {
 
 function renderStepPill(step, currentStep, label) {
   const status = session1StepStatus(step, currentStep);
-  return `<span class="step-pill step-${status}">${label}</span>`;
+  if (status === "upcoming") {
+    return `<span class="step-pill step-${status}">${label}</span>`;
+  }
+
+  return `<button class="step-pill step-${status}" type="button" data-session-step="${step}" ${
+    status === "current" ? 'aria-current="step"' : ""
+  }>${label}</button>`;
 }
 
 function renderSession2StepPill(step, currentStep, label) {
@@ -1495,6 +1501,13 @@ function session1StepStatus(step, currentStep) {
   if (stepIndex < currentIndex) return "done";
   if (stepIndex === currentIndex) return "current";
   return "upcoming";
+}
+
+function canNavigateSession1Step(currentStep, targetStep) {
+  const order = ["intro", "prior", "first-read", "second-pass", "questions", "wrap"];
+  const currentIndex = order.indexOf(currentStep);
+  const targetIndex = order.indexOf(targetStep);
+  return targetIndex >= 0 && currentIndex >= 0 && targetIndex <= currentIndex;
 }
 
 function session2StepStatus(step, currentStep) {
@@ -2582,6 +2595,16 @@ function bindSession1() {
       completeSession(1);
     });
   }
+
+  document.querySelectorAll("[data-session-step]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetStep = button.dataset.sessionStep;
+      if (!canNavigateSession1Step(progress.step ?? "intro", targetStep)) return;
+      progress.step = targetStep;
+      saveRun(run);
+      render();
+    });
+  });
 }
 
 function bindSession2() {
