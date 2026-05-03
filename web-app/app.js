@@ -780,27 +780,86 @@ function sequenceNextSession() {
 
 function sequenceOverviewContent() {
   const allCompleted = contentPack.sessions.every((session) => run.statuses[session.number] === "completed");
+  const nextSession = sequenceNextSession();
   if (allCompleted) {
     return {
+      eyebrow: "Where you are",
       heading: "Sequence complete",
       body: "You can revisit any step or read the final recap.",
+      callout: "",
       showNext: false,
+      ctaLabel: "",
+      savedLine: "",
+      sideEyebrow: "What you built",
+      sideHeading: "Words, family, and weather ideas",
+      sideBody: "The recap shows what is steady for now and what needs another look.",
+      sideItems: [
+        "Review the anchor words from the passage.",
+        "Check how port = carry helped with a related word.",
+        "Look back at your strongest weather explanation.",
+      ],
+    };
+  }
+
+  if (run.statuses[1] === "completed" && nextSession.number === 2) {
+    return {
+      eyebrow: "Up next",
+      heading: "Build the family behind transport",
+      body: "You just saw how transport helps explain moving air. Now use port = carry to build related words and try one new word.",
+      callout: "port = carry",
+      showNext: true,
+      ctaLabel: "Start Session 2",
+      savedLine: "",
+      sideEyebrow: "What you’ll do",
+      sideHeading: "Use one clue across related words",
+      sideBody: "Session 2 turns the highlighted word into a small word family.",
+      sideItems: [
+        "Build transport, import, and export.",
+        "Check how port = carry changes meaning.",
+        "Try portable without being taught first.",
+      ],
     };
   }
 
   if (run.startedAt) {
     return {
+      eyebrow: "Where you are",
       heading: "Continue where you left off",
       body: "Continue from the next unfinished step.",
+      callout: "",
       showNext: true,
+      ctaLabel: `Continue Session ${nextSession.number}`,
+      savedLine: "Your work is saved.",
+      sideEyebrow: "How this sequence works",
+      sideHeading: "One weather idea, connected words",
+      sideBody: "Each step brings the same words back in a new way, so the weather idea gets clearer.",
+      sideItems: sequenceOverviewItems(),
     };
   }
 
   return {
+    eyebrow: "Where you are",
     heading: "Start the sequence",
     body: "Begin with the passage and notice the words that carry the weather idea.",
+    callout: "",
     showNext: true,
+    ctaLabel: "Start Session 1",
+    savedLine: "Your work is saved.",
+    sideEyebrow: "How this sequence works",
+    sideHeading: "One weather idea, connected words",
+    sideBody: "Each step brings the same words back in a new way, so the weather idea gets clearer.",
+    sideItems: sequenceOverviewItems(),
   };
+}
+
+function sequenceOverviewItems() {
+  return [
+    "Read the passage and notice the key words.",
+    "Use port = carry to connect transport with related words.",
+    "Choose the word that best fits the sentence and the idea.",
+    "Use the words in your own weather explanation.",
+    "Review the words, try a related word, and write one final sentence.",
+  ];
 }
 
 function sequenceStatusLabel(status) {
@@ -890,22 +949,23 @@ function renderSequence() {
 
     <section class="grid two-up overview-grid session-1-workspace">
       <article class="card stat-card">
-        <p class="eyebrow">Where you are</p>
+        <p class="eyebrow">${overview.eyebrow}</p>
         <h3>${overview.heading}</h3>
         <p>${overview.body}</p>
-        ${overview.showNext ? `<p class="stat-number">Next: Session ${nextSession.number} — ${nextSession.title}</p>` : ""}
-        <p>Your work is saved.</p>
+        ${overview.callout ? `<p class="sequence-callout">${overview.callout}</p>` : ""}
+        ${
+          overview.showNext
+            ? `<a class="primary-button sequence-start-link" href="#/session/${nextSession.number}">${overview.ctaLabel}</a>`
+            : ""
+        }
+        ${overview.savedLine ? `<p>${overview.savedLine}</p>` : ""}
       </article>
       <article class="card note-card-wide">
-        <p class="eyebrow">How this sequence works</p>
-        <h3>One weather idea, connected words</h3>
-        <p>Each step brings the same words back in a new way, so the weather idea gets clearer.</p>
+        <p class="eyebrow">${overview.sideEyebrow}</p>
+        <h3>${overview.sideHeading}</h3>
+        <p>${overview.sideBody}</p>
         <ul class="plain-list">
-          <li>Read the passage and notice the key words.</li>
-          <li>Use port = carry to connect transport with related words.</li>
-          <li>Choose the word that best fits the sentence and the idea.</li>
-          <li>Use the words in your own weather explanation.</li>
-          <li>Review the words, try a related word, and write one final sentence.</li>
+          ${overview.sideItems.map((item) => `<li>${item}</li>`).join("")}
         </ul>
       </article>
     </section>
