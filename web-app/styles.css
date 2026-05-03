@@ -595,9 +595,34 @@ button {
   line-height: 1;
 }
 
+.sequence-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  margin: var(--space-8) 0 var(--space-5);
+}
+
+.sequence-preview span {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--space-14);
+  padding: 0 var(--space-5);
+  border: var(--rule-width) solid var(--rule-color-quiet);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, white 60%, transparent);
+  color: var(--color-black);
+  font-weight: 800;
+}
+
+.sequence-preview span:nth-child(2) {
+  border-color: color-mix(in srgb, var(--accent-1) 60%, rgba(0, 0, 0, 0.12));
+  background: rgba(228, 248, 101, 0.7);
+}
+
 .sequence-start-link {
   width: fit-content;
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
 }
 
 .note-card-wide ul,
@@ -965,6 +990,141 @@ button.step-pill:hover {
   color: var(--color-black);
   font-weight: 800;
   letter-spacing: 0;
+}
+
+.morphology-preview {
+  display: grid;
+  margin: var(--space-8) 0 var(--space-6);
+  border-top: var(--rule-width) solid var(--rule-color-quiet);
+}
+
+.morphology-preview-header {
+  padding: var(--space-5) 0;
+  color: var(--color-black);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.morphology-preview-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: baseline;
+  padding: var(--space-5) 0;
+  border-top: var(--rule-width) solid var(--rule-color-quiet);
+}
+
+.morphology-preview-row div {
+  color: var(--color-black);
+  font-weight: 800;
+}
+
+.morphology-preview-row span {
+  display: inline-flex;
+  padding: 0 0.12em;
+  background: rgba(228, 248, 101, 0.7);
+}
+
+.morphology-preview-row p {
+  margin: 0;
+  color: var(--color-gray-dark);
+}
+
+.morphology-preview-later {
+  color: var(--color-gray-dark);
+}
+
+.morphology-preview-later strong {
+  font-weight: 800;
+}
+
+.family-map-mini {
+  margin: var(--space-6) 0 var(--space-7);
+  padding: var(--space-5) 0 var(--space-6);
+  border-top: var(--rule-width) solid var(--rule-color-quiet);
+  border-bottom: var(--rule-width) solid var(--rule-color-quiet);
+}
+
+.family-map-mini p {
+  margin: 0 0 var(--space-4);
+  color: var(--color-black);
+  font-weight: 800;
+}
+
+.family-map-mini div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.family-map-mini span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 var(--space-4);
+  border: var(--rule-width) solid var(--rule-color-quiet);
+  border-radius: var(--radius-control);
+  color: var(--color-gray-dark);
+  background: color-mix(in srgb, white 64%, transparent);
+  font-size: var(--text-chip-size);
+  font-weight: 800;
+}
+
+.family-map-mini span.is-complete {
+  border-color: color-mix(in srgb, var(--session-2-accent) 55%, rgba(0, 0, 0, 0.12));
+  background: color-mix(in srgb, var(--session-2-accent) 32%, white 68%);
+  color: var(--color-black);
+}
+
+.family-map-mini span.is-later.is-complete {
+  border-color: color-mix(in srgb, var(--session-4-accent) 42%, rgba(0, 0, 0, 0.12));
+  background: color-mix(in srgb, var(--session-4-accent) 24%, white 76%);
+}
+
+.word-builder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-7) 0 var(--space-5);
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-weight: 800;
+}
+
+.word-builder-slot,
+.word-builder-base,
+.word-builder strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--space-14);
+  padding: 0 var(--space-5);
+  border: var(--rule-width) solid var(--rule-color-quiet);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, white 62%, transparent);
+  color: var(--color-black);
+}
+
+.word-builder-slot.is-filled,
+.word-builder-base {
+  background: rgba(228, 248, 101, 0.7);
+}
+
+.word-builder strong {
+  border-color: color-mix(in srgb, var(--session-2-accent) 54%, rgba(0, 0, 0, 0.12));
+  background: color-mix(in srgb, var(--session-2-accent) 22%, white 78%);
+}
+
+.build-feedback {
+  margin: var(--space-5) 0 0;
+  font-weight: 700;
+}
+
+.context-sentence {
+  margin: var(--space-5) 0;
+  padding: var(--space-5) var(--space-6);
+  border-left: 4px solid color-mix(in srgb, var(--session-2-accent) 62%, rgba(0, 0, 0, 0.08));
+  background: color-mix(in srgb, var(--session-2-accent) 10%, white 90%);
+  color: var(--color-black);
 }
 
 .reading-text {

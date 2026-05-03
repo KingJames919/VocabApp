@@ -952,10 +952,10 @@ function renderSequence() {
         <p class="eyebrow">${overview.eyebrow}</p>
         <h3>${overview.heading}</h3>
         <p>${overview.body}</p>
-        ${overview.callout ? `<p class="sequence-callout">${overview.callout}</p>` : ""}
+        ${overview.callout ? renderSequencePreview(overview.callout) : ""}
         ${
           overview.showNext
-            ? `<a class="primary-button sequence-start-link" href="#/session/${nextSession.number}">${overview.ctaLabel}</a>`
+            ? `<a class="primary-button accent-button accent-${nextSession.number} sequence-start-link" href="#/session/${nextSession.number}">${overview.ctaLabel}</a>`
             : ""
         }
         ${overview.savedLine ? `<p>${overview.savedLine}</p>` : ""}
@@ -997,6 +997,20 @@ function renderSequence() {
         })
         .join("")}
     </section>
+  `;
+}
+
+function renderSequencePreview(callout) {
+  if (callout !== "port = carry") {
+    return `<p class="sequence-callout">${callout}</p>`;
+  }
+
+  return `
+    <div class="sequence-preview" aria-label="Session 2 word-family preview">
+      <span>transport</span>
+      <span>${callout}</span>
+      <span>portable</span>
+    </div>
   `;
 }
 
@@ -1197,6 +1211,7 @@ function renderSession2() {
       <article class="card sidebar-surface">
         <p class="eyebrow">Your Progress</p>
         <h3>Word family work</h3>
+        ${renderSession2FamilyMap(progress)}
         ${renderProgressChecklist([
           {
             label: "Family clue shown",
@@ -1233,19 +1248,61 @@ function renderSession2() {
           ? `<button class="primary-button accent-button accent-2" id="complete-session-2" type="button" ${
               canFinish ? "" : "disabled"
             }>Save and continue</button>`
-          : `<button class="primary-button accent-button accent-2" id="advance-session-2" type="button">${session2ForwardLabel(currentStep)}</button>`
+          : `<button class="primary-button accent-button accent-2" id="advance-session-2" type="button" ${
+              session2AdvanceDisabled(currentStep, progress) ? "disabled" : ""
+            }>${session2ForwardLabel(currentStep, progress)}</button>`
       }
     </section>
   `;
 }
 
-function session2ForwardLabel(step) {
+function renderSession2FamilyMap(progress) {
+  const familyItems = [
+    { label: "transport", complete: Boolean(progress.rounds.s2_round_1?.completed) },
+    { label: "import", complete: Boolean(progress.rounds.s2_round_2?.completed) },
+    { label: "export", complete: Boolean(progress.rounds.s2_round_3?.completed) },
+    { label: "portable", complete: Boolean(progress.transfer.completed), isLater: true },
+  ];
+
+  return `
+    <div class="family-map-mini" aria-label="Session 2 family map">
+      <p>port = carry</p>
+      <div>
+        ${familyItems
+          .map(
+            (item) => `
+              <span class="${item.complete ? "is-complete" : ""} ${item.isLater ? "is-later" : ""}">
+                ${item.label}
+              </span>
+            `,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
+function session2ForwardLabel(step, progress) {
   if (step === "preview") return "Start building words";
-  if (step === "round_1") return "Continue to import";
-  if (step === "round_2") return "Continue to export";
-  if (step === "round_3") return "Try a new related word";
+  if (step.startsWith("round_")) {
+    const round = session2Rounds[Number(step.split("_")[1]) - 1];
+    const roundState = progress.rounds[round.id] ?? {};
+    if (!roundState.selectedPrefix) return "Build the word first";
+    if (!roundState.buildCorrect) return "Try another first part";
+    if (roundState.meaningChoice === undefined) return "Check the meaning";
+    if (step === "round_1") return "Continue to import";
+    if (step === "round_2") return "Continue to export";
+    return "Try a new related word";
+  }
   if (step === "transfer") return "Go to wrap";
   return "Continue";
+}
+
+function session2AdvanceDisabled(step, progress) {
+  if (!step.startsWith("round_")) return false;
+  const round = session2Rounds[Number(step.split("_")[1]) - 1];
+  const roundState = progress.rounds[round.id] ?? {};
+  return roundState.buildCorrect !== true || roundState.meaningChoice === undefined;
 }
 
 function session2TransferSidebarLabel(status) {
@@ -1299,18 +1356,18 @@ function session2RoundFeedback(roundNumber, isCorrect) {
   if (roundNumber === 1) {
     return isCorrect
       ? "That fits. Transport uses port = carry and means to carry from one place to another."
-      : "Not quite. Transport should build from trans + port, and its meaning here is to carry from one place to another.";
+      : "Not quite. That builds a different port word. For transport, look for the part that means across or from one place to another.";
   }
 
   if (roundNumber === 2) {
     return isCorrect
       ? "That fits. Import uses port = carry and means to carry in."
-      : "Not quite. Import should build from im + port, and its meaning here is to carry in.";
+      : "Not quite. That builds a different port word. For import, look for the part that means in.";
   }
 
   return isCorrect
     ? "That fits. Export uses port = carry and means to carry out."
-    : "Not quite. Export should build from ex + port, and its meaning here is to carry out.";
+    : "Not quite. That builds a different port word. For export, look for the part that means out.";
 }
 
 function renderSession3() {
@@ -1687,22 +1744,27 @@ function renderSession2Body(step, progress) {
       <h4>One family clue across related words</h4>
       <p>You saw transport in the weather passage. It helped explain how moving air can carry heat and moisture.</p>
       <p>This family uses the clue port = carry.</p>
-      <p>You’ll build transport, import, and export. Later, you’ll try portable with the same clue.</p>
-      <p><strong>port = carry</strong></p>
-      <div class="soft-badge-row">
-        <span class="accent-chip accent-2">transport</span>
-        <span class="accent-chip accent-2">import</span>
-        <span class="accent-chip accent-2">export</span>
-        <span class="accent-chip accent-4">portable</span>
+      <p>The first part changes how the carrying works: across, in, or out.</p>
+      <div class="morphology-preview" aria-label="Port word family preview">
+        <div class="morphology-preview-header">port = carry</div>
+        <div class="morphology-preview-row">
+          <div><span>trans</span> + <span>port</span> → <strong>transport</strong></div>
+          <p>carry across or from place to place</p>
+        </div>
+        <div class="morphology-preview-row">
+          <div><span>im</span> + <span>port</span> → <strong>import</strong></div>
+          <p>carry in</p>
+        </div>
+        <div class="morphology-preview-row">
+          <div><span>ex</span> + <span>port</span> → <strong>export</strong></div>
+          <p>carry out</p>
+        </div>
+        <div class="morphology-preview-row morphology-preview-later">
+          <div><strong>portable</strong></div>
+          <p>later: able to be carried</p>
+        </div>
       </div>
-      <div class="support-block">
-        <p class="eyebrow">Family clue</p>
-        <h4>port means carry</h4>
-        <p>A word family shares a meaningful part.</p>
-        <p>In this family, port points to carry.</p>
-        <p>The first part changes how the carrying works: across, in, or out.</p>
-        <p class="helper-text">The clue gives you a starting meaning. The sentence still has to make sense.</p>
-      </div>
+      <p class="helper-text">The clue gives you a starting meaning. The sentence still has to make sense.</p>
     `;
   }
 
@@ -2187,9 +2249,10 @@ function renderQuestionCard(question, index, selectedIndex) {
 function renderSession2Round(round, roundProgress, roundNumber) {
   const builtWord = roundProgress.selectedPrefix
     ? `${roundProgress.selectedPrefix}${round.base}`
-    : `__${round.base}`;
+    : "";
   const buildReady = Boolean(roundProgress.selectedPrefix);
   const meaningAnswered = roundProgress.meaningChoice !== undefined;
+  const prefixFeedback = renderSession2PrefixFeedback(round, roundProgress);
   const feedback =
     roundProgress.completed === true
       ? `<p class="feedback ${roundProgress.isCorrect ? "feedback-correct" : "feedback-incorrect"}">${session2RoundFeedback(roundNumber, roundProgress.isCorrect)}</p>`
@@ -2204,6 +2267,13 @@ function renderSession2Round(round, roundProgress, roundNumber) {
       <h4>${session2RoundTitle(roundNumber)}</h4>
       <p>${session2RoundPrompt(roundNumber)}</p>
       <p class="helper-text">Tap one first part to build the word with port. Then check what the word means.</p>
+      <div class="word-builder" aria-label="Word builder">
+        <span class="word-builder-slot ${buildReady ? "is-filled" : ""}">${roundProgress.selectedPrefix ?? "?"}</span>
+        <span>+</span>
+        <span class="word-builder-base">${round.base}</span>
+        <span aria-hidden="true">→</span>
+        <strong>${buildReady ? builtWord : "____"}</strong>
+      </div>
       <div class="build-row">
         ${round.prefixes
           .map(
@@ -2218,11 +2288,12 @@ function renderSession2Round(round, roundProgress, roundNumber) {
             `,
           )
           .join("")}
-        <span class="word-build-preview">Word built: ${builtWord}</span>
       </div>
+      ${prefixFeedback}
       <div class="meaning-block">
         <h4>Check the meaning</h4>
         <p class="helper-text">The family clue helps, but the whole word has to fit the meaning.</p>
+        <blockquote class="context-sentence">${session2ContextSentence(round.targetWord)}</blockquote>
         <p>${session2MeaningPrompt(roundNumber)}</p>
         <div class="option-list">
           ${round.meaningOptions
@@ -2234,6 +2305,7 @@ function renderSession2Round(round, roundProgress, roundNumber) {
                     name="${round.id}_meaning"
                     value="${optionIndex}"
                     ${roundProgress.meaningChoice === optionIndex ? "checked" : ""}
+                    ${roundProgress.buildCorrect === true ? "" : "disabled"}
                   />
                   <span>${option}</span>
                 </label>
@@ -2249,6 +2321,38 @@ function renderSession2Round(round, roundProgress, roundNumber) {
       ${feedback}
     </article>
   `;
+}
+
+function renderSession2PrefixFeedback(round, roundProgress) {
+  if (!roundProgress.selectedPrefix) return "";
+
+  const builtWord = `${roundProgress.selectedPrefix}${round.base}`;
+  if (roundProgress.buildCorrect) {
+    return `<p class="build-feedback feedback-correct">Built: ${roundProgress.selectedPrefix} + ${round.base} → ${builtWord}</p>`;
+  }
+
+  return `<p class="build-feedback feedback-incorrect">${roundProgress.selectedPrefix} + ${round.base} makes ${builtWord}. ${session2PrefixMeaning(roundProgress.selectedPrefix)} Try the part that fits ${round.targetWord}.</p>`;
+}
+
+function session2PrefixMeaning(prefix) {
+  if (prefix === "trans") return "That points to carrying across or from place to place.";
+  if (prefix === "im") return "That points to carrying in.";
+  if (prefix === "ex") return "That points to carrying out.";
+  if (prefix === "sub") return "That usually points to under.";
+  if (prefix === "re") return "That usually points to again or back.";
+  return "That builds a different meaning.";
+}
+
+function session2ContextSentence(targetWord) {
+  if (targetWord === "transport") {
+    return "Moving air can transport heat and moisture into a storm system.";
+  }
+
+  if (targetWord === "import") {
+    return "A country can import supplies by carrying them in from another place.";
+  }
+
+  return "A company can export goods by carrying them out to another place.";
 }
 
 function renderSession2Transfer(transferProgress) {
@@ -2693,6 +2797,10 @@ function bindSession2() {
       const round = session2Rounds.find((entry) => entry.id === roundId);
       roundState.selectedPrefix = prefix;
       roundState.buildCorrect = prefix === round.correctPrefix;
+      delete roundState.meaningChoice;
+      delete roundState.meaningCorrect;
+      delete roundState.completed;
+      delete roundState.isCorrect;
       progress.rounds[roundId] = roundState;
       saveRun(run);
       render();
