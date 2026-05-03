@@ -1577,31 +1577,14 @@ function renderSession1Body(step, progress, score) {
                 (word) => `
                   <div class="word-support-row word-support-${word.id}">
                     <strong>${word.label}</strong>
-                    <span>${word.clue}</span>
+                    <div class="word-support-copy">
+                      <span>${word.clue}</span>
+                      ${renderWordSupportDetail(word.id)}
+                    </div>
                   </div>
                 `,
               )
               .join("")}
-          </div>
-          <div class="family-card family-card-feature">
-            <p class="eyebrow">Family clue</p>
-            <div class="word-sum" aria-label="Word sum for transport">
-              <span>trans</span>
-              <span>+</span>
-              <span>port</span>
-              <span aria-hidden="true">→</span>
-              <strong>transport</strong>
-            </div>
-            <p class="family-meaning"><strong>port</strong> = carry</p>
-            <p>Moving air can <strong>transport</strong> heat and moisture into a storm system.</p>
-          </div>
-          <div class="family-card">
-            <p class="eyebrow">Word parts to notice</p>
-            <p class="helper-text">No need to memorize these yet. Just notice that word parts can carry meaning.</p>
-            <ul class="plain-list">
-              <li>dict in predict</li>
-              <li>press in pressure</li>
-            </ul>
           </div>
         </aside>
       </div>
@@ -2038,6 +2021,34 @@ function renderSession5SentenceNotes(items = []) {
       ${items.map((item) => `<li>Sentence note: ${escapeHtml(item.message)}</li>`).join("")}
     </ul>
   `;
+}
+
+function renderWordSupportDetail(wordId) {
+  if (wordId === "predict") {
+    return `<p class="word-support-detail">Word part to notice: <span class="word-part">dict</span> in predict.</p>`;
+  }
+
+  if (wordId === "pressure") {
+    return `<p class="word-support-detail">Word part to notice: <span class="word-part">press</span> in pressure.</p>`;
+  }
+
+  if (wordId === "transport") {
+    return `
+      <div class="word-support-detail">
+        <p class="family-meaning"><span class="word-part">port</span> = carry</p>
+        <div class="word-sum" aria-label="Word sum for transport">
+          <span class="word-part">trans</span>
+          <span>+</span>
+          <span class="word-part">port</span>
+          <span aria-hidden="true">→</span>
+          <strong>transport</strong>
+        </div>
+        <p>Moving air can transport heat and moisture into a storm system.</p>
+      </div>
+    `;
+  }
+
+  return "";
 }
 
 function renderReadingBlock(withSupports) {

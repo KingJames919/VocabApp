@@ -888,7 +888,7 @@ button.step-pill:hover {
   border-top: var(--rule-width) solid var(--rule-color-quiet);
 }
 
-.word-support-row strong {
+.word-support-row > strong {
   display: inline-flex;
   width: fit-content;
   padding: 0 0.16em;
@@ -896,27 +896,33 @@ button.step-pill:hover {
   color: var(--color-black);
 }
 
-.word-support-row span {
+.word-support-copy > span {
   color: var(--color-gray-dark);
 }
 
-.family-card-feature {
-  margin-top: var(--space-6);
+.word-support-copy {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.word-support-detail {
+  margin: 0;
+  color: var(--color-black);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .word-sum {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-5) 0 var(--space-4);
-  font-size: 1.15rem;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 1rem;
   font-weight: 800;
 }
 
-.word-sum span,
-.word-sum strong,
-.family-meaning strong {
+.word-part {
   display: inline-flex;
   padding: 0 0.16em;
   background: rgba(228, 248, 101, 0.7);
@@ -930,8 +936,12 @@ button.step-pill:hover {
   padding: 0;
 }
 
+.word-sum strong {
+  color: var(--color-black);
+}
+
 .family-meaning {
-  margin: 0 0 var(--space-5);
+  margin: 0;
   color: var(--color-black);
   font-weight: 800;
   letter-spacing: 0;
